@@ -54,9 +54,9 @@ err_chk () {
 #---------------------------------------
 
 trans () {
-  vol_src=$1
-  vol_dest=$2
-  target_dir=$3
+  local vol_src=$1
+  local vol_dest=$2
+  local target_dir=$3
 
   echo "*** target dir : $target_dir ***" | tee -a $logpath
 
@@ -76,10 +76,10 @@ trans () {
 #---------------------------------------
 
 process () {
-  vol_src=$1 
-  vol_dest=$2
+  local vol_src=$1 
+  local vol_dest=$2
 
-  dirs_vol_src=($(ls $vol_src))
+  local dirs_vol_src=($(ls $vol_src))
 
   echo "*****************************" | tee -a $logpath
   echo "*** $vol_src -> $vol_dest ***" | tee -a $logpath
