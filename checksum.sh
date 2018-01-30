@@ -87,6 +87,66 @@ check () {
   # Check for destination directory
   echo "$vol_dest : $target_dir" | tee -a $logpath
 
+  pushd $vol_dest > /dev/null
+
+  echo "find, sort and sed" | tee -a $logpath
+  find $target_dir -type f | sort | sed -e "s/^/\"/" -e "s/$/\"/" > $tmppath 2>> $logpath
+  err_chk $? "find, sort and sed"
+
+  echo "cat and cksum" | tee -a $logpath
+  cat $tmppath | xargs cksum > $workdir/dest/$vol_name/cksum_$target_dir 2>> $logpath
+  err_chk $? "cat and cksum"
+
+  popd > /dev/null
+}
+
+#---------------------------------------
+# Create checksum strings by directory
+# Globals:
+#   logpath
+#   tmppath
+# Arguments:
+#   $1 -> Source volume
+#   $2 -> Destination volume
+#   $3 -> target dircotry
+# Returns:
+#   None
+#---------------------------------------
+
+check_ () {
+  local vol_src=$1
+  local vol_dest=$2
+  local target_dir=$3
+
+  echo "*** target dir : $target_dir ***" | tee -a $logpath
+
+  local vol_name=${vol_src#/}
+
+  if [ ! -e $workdir/src/$vol_name ]; then
+    mkdir -p $workdir/src/$vol_name
+  fi
+  if [ ! -e $workdir/dest/$vol_name ]; then
+    mkdir -p $workdir/dest/$vol_name
+  fi
+
+  # Check for source directory
+  echo "$vol_src : $target_dir" | tee -a $logpath
+
+  pushd $vol_src > /dev/null
+
+  echo "find, sort and sed" | tee -a $logpath
+  find $target_dir -type f | sort | sed -e "s/^/\"/" -e "s/$/\"/" > $tmppath 2>> $logpath
+  err_chk $? "find, sort and sed" | tee -a $logpath
+
+  echo "cat and cksum" | tee -a $logpath
+  cat $tmppath | xargs cksum > $workdir/src/$vol_name/cksum_$target_dir 2>> $logpath
+  err_chk $? "cat and cksum" | tee -a $logpath
+
+  popd > /dev/null
+
+  # Check for destination directory
+  echo "$vol_dest : $target_dir" | tee -a $logpath
+
   pushd $vol_dest/from_$vol_name > /dev/null
 
   echo "find, sort and sed" | tee -a $logpath

@@ -60,6 +60,29 @@ trans () {
 
   echo "*** target dir : $target_dir ***" | tee -a $logpath
 
+  rsync $option $vol_src/$target_dir/ $vol_dest/$target_dir/ 2>> $logpath
+  err_chk $? "command : rsync"
+}
+
+#---------------------------------------
+# Transfer files with rsync by directory
+# Globals:
+#   logpath
+# Arguments:
+#   $1 -> Source volume
+#   $2 -> Destination volume
+#   $3 -> target dircotry
+# Returns:
+#   None
+#---------------------------------------
+
+trans_ () {
+  local vol_src=$1
+  local vol_dest=$2
+  local target_dir=$3
+
+  echo "*** target dir : $target_dir ***" | tee -a $logpath
+
   rsync $option $vol_src/$target_dir $vol_dest/from_${vol_src#/}/ 2>> $logpath
   err_chk $? "command : rsync"
 }
